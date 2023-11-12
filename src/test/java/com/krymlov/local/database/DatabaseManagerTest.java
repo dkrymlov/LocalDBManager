@@ -2,7 +2,9 @@ package com.krymlov.local.database;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.krymlov.local.database.parts.Column;
 import com.krymlov.local.database.parts.Row;
+import com.krymlov.local.database.parts.Table;
 import com.krymlov.local.database.parts.datatypes.ColumnType;
 import com.krymlov.local.database.gui.CustomTable;
 import com.krymlov.local.database.gui.CustomTableModel;
@@ -157,6 +159,33 @@ public class DatabaseManagerTest {
         CustomTable table = (CustomTable) scrollPane.getViewport().getView();
         dbManager.updateCellValue("123", 0, 0, 0, table); // Pass null for CustomTable in this test
         assertEquals("123", dbManager.database.tables.get(0).rows.get(0).values.get(0));
+    }
+
+    @Test
+    public void projection(){
+        dbManager.createDB("TestDB");
+        dbManager.addTable("Table1");
+        dbManager.addColumn(0, "C1", ColumnType.INT);
+        dbManager.addColumn(0, "C2", ColumnType.STRING);
+
+        Row row1 = new Row();
+        Row row2 = new Row();
+        Row row3 = new Row();
+        row1.values.add("1");
+        row1.values.add("Value1");
+        row2.values.add("2");
+        row2.values.add("Value2");
+        row3.values.add("3");
+        row3.values.add("Value2");
+        dbManager.addRow(0, row1);
+        dbManager.addRow(0, row2);
+        dbManager.addRow(0, row3);
+        Column column1 = DatabaseManager.database.tables.get(0).columns.get(0);
+        String operator = ">=";
+        dbManager.projection(0, new CustomTableModel(), column1, operator, "2");
+
+        Table projectionTable = DatabaseManager.database.tables.get(1);
+        assertEquals(projectionTable.rows.size(), 2);
     }
 
 }
